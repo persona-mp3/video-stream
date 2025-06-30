@@ -1,0 +1,53 @@
+
+    So we want to read the content from the client according
+    to the byte length. With the way this project might evolve we just might
+    make own custom protocol, just for the fun of it. We are currently using
+    bytes as the main language for this protocol, so a lot of string and byte
+    manipulation will be heavily involved. This is what the basic structure of
+    the protocol will look like
+    ==========================================================================
+                        Content-Length <N> \r\n
+                        Content: //
+    ==========================================================================
+    The`Content-Length` will have a defined size of 4 bytes, just incase things
+    could start getting funny, so we know a content of over 4 bytes is CRAZY
+    ==========================================================================
+    So we can slice the content gotten from stream packets like this:
+    ==========================================================================
+                        packet[:contentLen]
+                        decode bytes -> jpeg -> video
+    ==========================================================================
+    We can make sure they communciate over STDIO, but I think tcp already does
+    that, or we could just use netcat to connect to the server as a client
+
+
+
+
+
+
+    ==========================================================================
+                    STEP 2 || PARSING CV OUTPUT || 00:11:38 07/01/2025
+    ==========================================================================
+    We've been able to do a baisc decoding function to read the protocol, that just 
+    readers HEADER_LEN which is 4 bytes from the client, and reads that packet from the 4th    
+    byte until the end of the buffer. This is quite sufficient for now, as the server will 
+    eventually need more tweaking, if we are being realistic.
+
+    Basic packet structure => content-len(4bytes) + content
+
+    So now we can target the elephant in the room, the numpy array output. I'm quite bent 
+    on understanding how numpy works and trying a few tasks and exercises with them. It'll 
+    be better to understand how to manipulate numpy arrays than just using OpenCV's modules 
+    or always looking up the docs without learning the basics. So these are things we need 
+    to learn now:
+     
+    1. The Struct module in python. This so far has been used and will more often than not 
+       be used more in more of the code.
+
+    2. BigEndian and LittleEndian: IDEK who these guys are, I've seen them been used in Go 
+       before, but I think it's actually a standard thing
+
+    3. SOCKET: I've got to know this thing inside and out like how I know express or HTTP. 
+       It's quite interesting but heavily abstracted as the docs server little to no help.
+       As I'd like to implement a multithreading if multiple connection sockets are involved
+
