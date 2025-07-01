@@ -1,5 +1,6 @@
 import struct
 import socket
+from pathlib import Path
 
 
 def TestDecoding():
@@ -19,4 +20,25 @@ def TestDecoding():
     s.sendall(packet)
 
 
-TestDecoding()
+def StreamFile():
+    try:
+        file_handler = open("./yogit.go", "r")
+        print(file_handler.read(225))
+    except (FileNotFoundError, PermissionError, IOError) as e:
+        print(f"An exception error occured:\n {e}")
+    finally:
+        file_handler.close()
+
+
+# StreamFile()
+
+
+def StreamFile2():
+    p = Path("yogit.go")
+    print(dir(p))
+    x = dir(p)
+    for i, b in enumerate(x, 0):
+        print(f"{i} : {b}")
+
+
+StreamFile2()

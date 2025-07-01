@@ -1,0 +1,3 @@
+Lets see if we can stream into the tcp. We'll stream a large file into the 
+TCP network, and send it in chunks.
+We'll place them in packets and see maybe just maybe if we can label them.
