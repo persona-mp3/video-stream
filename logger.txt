@@ -1,0 +1,38 @@
+
+New Client => <socket.socket fd=4, family=2, type=1, proto=0, laddr=('127.0.0.1', 8000), raddr=('127.0.0.1', 37456)>|| Address => ('127.0.0.1', 37456)
+
+ <class 'int'>o====o<class 'bytes'> False
+ b'\x00\x00\x01\x90'o===o4 
+length of content bytes ==> b'\x00\x00\x01\x90' 
+
+decoded length ===> 400
+
+server sync n ->  1
+client message
+
+package yogit
+
+import (
+	// "compress/gzip"
+	"bufio"
+	"bytes"
+	"crypto/sha1"
+	"encoding/hex"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/aquasecurity/table"
+	"github.com/liamg/tml"
+)
+
+type Commit struct {
+	Parent Sha1Hash `json:"parent"`
+	Id Sha1Hash `json:"hashId"`
+	Tree Sha1Hash `json:"tree"`
+	Author string `json:"author"`
+	Contact string `json:"contact"`
+	CommitMsg string `json:"

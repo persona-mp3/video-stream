@@ -15,7 +15,6 @@ import (
 
 	"github.com/aquasecurity/table"
 	"github.com/liamg/tml"
-	// "github.com/liamg/tml"
 )
 
 type Commit struct {

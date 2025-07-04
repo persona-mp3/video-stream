@@ -20,18 +20,17 @@ def create_server(port):
         if connected_sockets:
             for clients in connected_sockets:
                 client, addr = clients.accept()
-                print(f"New Client => {client}|| Address => {addr}")
+                print(f"\nNew Client => {client}|| Address => {addr}\n")
                 decode_content(client)
 
-                try:
-                    client.close()
-                    print("Client socket closed successfully")
-                except OSError:
-                    print("Client preclosed")
+                # try:
+                #     client.close()
+                #     print("Client socket closed successfully")
+                # except OSError:
+                #     print("Client preclosed")
 
 
 def read_content(client):
-    print("reading from client...")
     """
     So we want to read the content from the client according
     to the byte length. With the way this project might evolve we just might
@@ -57,34 +56,37 @@ def read_content(client):
 
 
 def get_content_len(client):
-    content_len = b''
-    while len(content_len) < HEADER_LEN:
-        print("getting len", len(content_len))
+    content_len = b''  # bytes 
+    while len(content_len) < HEADER_LEN:  # int
         chunk = client.recv(HEADER_LEN - len(content_len))
         if not chunk:
-            raise ConnectionError("Socket closed?? dafuq")
+            raise ConnectionError("Socket closed?? wtf")
         content_len += chunk
 
-    print("done getting the header, about to read length")
+    print(f" {type(HEADER_LEN)}o====o{type(content_len)} {
+          content_len == HEADER_LEN}\n {content_len}o===o{HEADER_LEN} ")
     return content_len
 
 
 def decode_content(client):
     content_len = get_content_len(client)
-    print("length of content == > ", content_len)
-    # decoded_len = content_len.decode("utf-8")
-    # decoded_len = int.to_bytes(content_len, HEADER_LEN, "big")
+    print(f"length of content bytes ==> {content_len} \n", )
     decoded_len = struct.unpack(">I", content_len)[0]
-    print("decoded length ===> ", decoded_len)
+    print(f"decoded length ===> {decoded_len}\n")
 
     buffer = b''
+    count = 0
 
     while len(buffer) < decoded_len:
         content = client.recv(decoded_len - len(buffer))
         # content += buffer
         buffer += content
+        count += 1
+        print("server sync n -> ", count)
 
-    print("Done reading content, message from client is ->\n", str(buffer))
+    # print("Done reading content, message from client is ->\n", str(buffer))
+    print("client message\n")
+    print(buffer.decode("utf-8"))
 
 
 create_server(8000)
