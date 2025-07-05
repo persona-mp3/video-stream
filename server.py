@@ -1,6 +1,7 @@
 import socket
 import select
 import struct
+import typing
 
 
 # number of bytes to read from content to retrieve content-length
@@ -21,7 +22,14 @@ def create_server(port):
             for clients in connected_sockets:
                 client, addr = clients.accept()
                 print(f"\nNew Client => {client}|| Address => {addr}\n")
-                decode_content(client)
+                # is_eof = client.recv(HEADER_LEN)
+                while True:  # if is_eof != b'':
+                    content_len = get_content_len(client)
+                    if content_len != b'': 
+                        decode_content(client, content_len)
+                    else:
+                        print("No more content to read from clinet")
+                        break
 
                 # try:
                 #     client.close()
@@ -68,8 +76,8 @@ def get_content_len(client):
     return content_len
 
 
-def decode_content(client):
-    content_len = get_content_len(client)
+def decode_content(client: socket, content_len: bytes):
+    # content_len = get_content_len(client)
     print(f"length of content bytes ==> {content_len} \n", )
     decoded_len = struct.unpack(">I", content_len)[0]
     print(f"decoded length ===> {decoded_len}\n")
@@ -87,6 +95,63 @@ def decode_content(client):
     # print("Done reading content, message from client is ->\n", str(buffer))
     print("client message\n")
     print(buffer.decode("utf-8"))
+
+    # so if we have 3 packets its something like this 
+    # packet, packet, packet
+    # {400, blob} { 321, blob }, { 21, blob }
+    # total-len => 4*3 + ( 400 + 321 + 21 ) = 8904 bytes 
+    # so when we read the first packet, we know we have 
+    # remains = -packet_size + total_len ===== 8904 - (4bytes + 400 ) = 8500
+    # and then we could just update our curr_len to remains
+    # total_len = remains
+    # but we can't tel how many packets we have unless we start using ACK numbers 
+    # but since we are streaming i dont think those matter, so the best thing is to 
+    # always check if there are more bytes to read
+    # but we also need to know where we stopped out last read... 
+    # and we def not want recursion on out servers
+
+    # =============================================================================
+    #           if client.recv(HEADER_LEN) != b'':
+    #               decode_content(client)
+    # =============================================================================
+
+
+def check_content(client):
+    # so we need to also read from the client again, kinda like to make it 
+    # recursice, you feel me>>??
+    # so if theres still more content to read, we call decode content again?YYESS
+    # but we also need to know when to stop, we could just use a clever as while loop 
+    pass
+
+
+def recv_content(client: socket, after: bytes, before: bytes, current: bytes):
+    """
+    ===============================================================================
+        current = 0 
+        before = 0 
+
+        header_len  = b''
+        while len(header_len) < HEADER_LEN:
+            data = client.recv(HEADER_LEN - len(header_len))
+            if data == b'':
+                print("end of socket reached")
+                break
+
+            header_len += data
+
+            if header_len == HEADER_LEN:
+                print("we can give this to the next function for processing...")
+                return header_len
+
+
+    i mean we can have a function that just reads content from the socket, and another one
+    that tells it where to read
+
+    read_from(client, x,)
+    ===============================================================================
+
+    """
+    pass
 
 
 create_server(8000)
